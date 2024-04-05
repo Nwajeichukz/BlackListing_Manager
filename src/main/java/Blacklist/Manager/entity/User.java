@@ -15,13 +15,13 @@ public class User {
     @Column(name = "id", nullable = false, unique = true)
     private Long id;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password")
     private String password;
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "role_fk", referencedColumnName = "id")
     private Role roles;
 }

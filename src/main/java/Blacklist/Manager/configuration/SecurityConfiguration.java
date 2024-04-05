@@ -39,7 +39,6 @@ public class SecurityConfiguration {
                 .csrf()
                 .disable()
                 .authorizeHttpRequests().antMatchers(WHITE_LIST).permitAll()
-//                .antMatchers("/add").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement()
