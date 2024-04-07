@@ -2,16 +2,27 @@ package Blacklist.Manager.controller;
 
 import Blacklist.Manager.dto.AppResponse;
 import Blacklist.Manager.dto.UserDto;
+import Blacklist.Manager.entity.User;
 import Blacklist.Manager.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 import javax.validation.Valid;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 
 @RequestMapping("/user")
 @RestController
@@ -25,5 +36,50 @@ public class UserController {
     public ResponseEntity<AppResponse<String>> createUser(@Valid @RequestBody UserDto userDto){
         return ResponseEntity.ok(userService.CreateUser(userDto));
     }
+
+    @PreAuthorize("hasRole('ROLE_USER_ADMIN')")
+    @GetMapping("/users")
+    public ResponseEntity<AppResponse<List<UserDto>>> getAllUsers() {
+        AppResponse<List<UserDto>> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
+    }
+
+   
+    @PreAuthorize("hasRole('ROLE_USER_ADMIN')")
+    @GetMapping("/users_pagination")
+    public ResponseEntity<AppResponse<Page<UserDto>>> getPaginatedAllUsers(@PageableDefault(size = 10) Pageable pageable) {
+        AppResponse<Page<UserDto>> response = userService.getPaginatedAllUsers(pageable);
+        return ResponseEntity.ok(response);
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER_ADMIN')")
+    @PutMapping("/users/{id}")
+    public ResponseEntity<AppResponse<UserDto>> updateUser(@PathVariable(value = "id") Long userId,
+                                            @Valid @RequestBody UserDto userDto) {
+        try {
+            AppResponse<UserDto> updatedUser = userService.updateUser(userId, userDto);
+            return ResponseEntity.ok(updatedUser);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new AppResponse<>(1, e.getMessage(), null));
+        }
+    }
+
+    
+    @PreAuthorize("hasRole('ROLE_USER_ADMIN')")
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<AppResponse<String>> deleteUser(@PathVariable Long id) {
+        AppResponse<String> response = userService.deleteUser(id);
+        return ResponseEntity.ok(response);
+    }
+
+
+
+    // @GetMapping("/users")
+    // public ResponseEntity<List<User>> getAllUsers() {
+    //     List<User> users = userService.getAllUsers();
+    //     return ResponseEntity.ok(users);
+    // }
+
+    
 
 }
