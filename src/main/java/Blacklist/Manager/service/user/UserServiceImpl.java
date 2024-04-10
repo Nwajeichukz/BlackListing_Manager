@@ -11,8 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -50,24 +49,6 @@ public class UserServiceImpl implements UserService {
         return new AppResponse<>(0, "user created successfully");
     }
 
-    @Override
-    public AppResponse<List<UserDto>> getAllUsers() {
-        List<User> users = userRepository.findAll(); 
-        List<UserDto> userDtos = users.stream().map(this::convertToDto).collect(Collectors.toList());
-    
-        return new AppResponse<>(0, "Users fetched successfully", userDtos);
-    }
-
-    private UserDto convertToDto(User user) {
-        UserDto dto = new UserDto();
-        dto.setId(user.getId());
-        dto.setEmail(user.getEmail()); // Set the email from User entity
-        if (user.getRoles() != null) {
-            dto.setRole(user.getRoles().getName()); // Set the role name from Role entity
-        }
-        return dto;
-    }
-
 
     @Override
     public AppResponse<Page<UserDto>> getPaginatedAllUsers(Pageable pageable) {
@@ -94,24 +75,33 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public AppResponse<String> deleteUser(Long id) {
-        return userRepository.findById(id)
-            .map(user -> {
-                userRepository.delete(user);
-                return new AppResponse<String>(0, "User deleted successfully");
-            })
-            .orElseGet(() -> new AppResponse<String>(1, "User not found with id: " + id));
+        // Check if the user exists
+        if (!userRepository.existsById(id)) {
+            // If not exists, throw an exception
+            throw new EntityNotFoundException("User not found with id: " + id);
+        }
+
+        // If user exists, proceed to delete
+        userRepository.deleteById(id);
+
+        // Return success response after deletion
+        return new AppResponse<String>(0, "User deleted successfully");
     }
 
-    // @Override
-    // public void deleteUser(Long id) {
-    //     userRepository.deleteById(id);
-    // }
 
 
-    // @Override
-    // public List<User> getAllUsers() {
-    //     return userRepository.findAll();
-    // }
+    private UserDto convertToDto(User user) {
+        UserDto dto = new UserDto();
+        dto.setId(user.getId());
+        dto.setEmail(user.getEmail()); // Set the email from User entity
+        if (user.getRoles() != null) {
+            dto.setRole(user.getRoles().getName()); // Set the role name from Role entity
+        }
+        return dto;
+    }
+
+   
+
 
     
 }

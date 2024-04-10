@@ -37,16 +37,10 @@ public class UserController {
         return ResponseEntity.ok(userService.CreateUser(userDto));
     }
 
-    @PreAuthorize("hasRole('ROLE_USER_ADMIN')")
-    @GetMapping("/users")
-    public ResponseEntity<AppResponse<List<UserDto>>> getAllUsers() {
-        AppResponse<List<UserDto>> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
-    }
-
    
+
     @PreAuthorize("hasRole('ROLE_USER_ADMIN')")
-    @GetMapping("/users_pagination")
+    @GetMapping("/all_users")
     public ResponseEntity<AppResponse<Page<UserDto>>> getPaginatedAllUsers(@PageableDefault(size = 10) Pageable pageable) {
         AppResponse<Page<UserDto>> response = userService.getPaginatedAllUsers(pageable);
         return ResponseEntity.ok(response);

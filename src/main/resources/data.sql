@@ -1,1 +1,3 @@
-INSERT INTO users (email, role_fk) VALUES('jabulani009@gmail.com','4');
+INSERT INTO role (name) VALUES('ROLE_USER_ADMIN');
+
+INSERT INTO users (email, role_fk) VALUES('nwajeigoddowell@gmail.com','1');
