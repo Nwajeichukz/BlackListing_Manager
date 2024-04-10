@@ -4,6 +4,7 @@ import Blacklist.Manager.dto.AppResponse;
 import Blacklist.Manager.dto.UserDto;
 import Blacklist.Manager.service.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,7 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class UserController {
 
+    @Autowired
     private final UserService userService;
 
     @PreAuthorize("hasRole('ROLE_USER_ADMIN')")
