@@ -5,6 +5,7 @@ import Blacklist.Manager.dto.UserDto;
 import Blacklist.Manager.entity.User;
 import Blacklist.Manager.service.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,6 +30,7 @@ import org.springframework.data.web.PageableDefault;
 @RequiredArgsConstructor
 public class UserController {
 
+    @Autowired
     private final UserService userService;
 
     @PreAuthorize("hasRole('ROLE_USER_ADMIN')")

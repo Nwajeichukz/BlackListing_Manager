@@ -6,6 +6,7 @@ import Blacklist.Manager.dto.CreatePasswordDto;
 import Blacklist.Manager.exception.ApiException;
 import Blacklist.Manager.service.authentication.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +21,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
+
+//    @Autowired
+//    public AuthController(AuthService authService) {
+//        this.authService = authService;
+//    }
 
     @PostMapping("/update")
     public ResponseEntity<AppResponse<Map<String, Object>>> createUser(@Valid @RequestBody CreatePasswordDto request){
