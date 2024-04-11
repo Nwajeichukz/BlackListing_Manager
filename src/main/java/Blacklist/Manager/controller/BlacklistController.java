@@ -1,71 +1,50 @@
 package Blacklist.Manager.controller;
 
+import Blacklist.Manager.dto.AppResponse;
 import Blacklist.Manager.dto.BlacklistDTO;
-import Blacklist.Manager.dto.ItemDTO;
-import Blacklist.Manager.dto.RemoveBlacklistDTO;
-import Blacklist.Manager.entity.BlacklistLog;
+
+import Blacklist.Manager.entity.Blacklist;
 import Blacklist.Manager.service.blacklist.BlacklistService;
-import Blacklist.Manager.service.item.ItemService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import javax.validation.Valid;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/blacklist")
+@RequestMapping("/blacklist")
+@RequiredArgsConstructor
 public class BlacklistController {
-
-
     private final BlacklistService blacklistService;
-    private final ItemService itemService;
 
-    @Autowired
-    public BlacklistController(BlacklistService blacklistService, ItemService itemService) {
-        this.blacklistService = blacklistService;
-        this.itemService = itemService;
-    }
 
+    @PreAuthorize("hasRole('ROLE_BLACKLIST_ADMIN')")
     @GetMapping
-    public ResponseEntity<List<BlacklistDTO>> getAllBlacklistedItems() {
-        List<BlacklistDTO> blacklistItems = blacklistService.getAllBlacklistedItems();
-        return new ResponseEntity<>(blacklistItems, HttpStatus.OK);
+    public ResponseEntity<AppResponse<Map<String, Object>>> getAllBlacklistedItems(
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "5") int size
+    ) {
+        return ResponseEntity.ok(blacklistService.getAllBlacklistedItems(PageRequest.of(page, size)));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<BlacklistDTO> getBlacklistById(@PathVariable int id) {
-        BlacklistDTO blacklistDTO = blacklistService.getBlacklistById(id);
-        return ResponseEntity.ok(blacklistDTO);
-    }
-
+    @PreAuthorize("hasRole('ROLE_BLACKLIST_ADMIN')")
     @PostMapping("/add")
-    public ResponseEntity<BlacklistDTO> addBlacklistedItem(@RequestBody BlacklistDTO blacklistDTO) {
-        BlacklistDTO addedItem = blacklistService.addBlacklistedItem(blacklistDTO.getItemId(), blacklistDTO.getReason());
-        return new ResponseEntity<>(addedItem, HttpStatus.CREATED);
+    public ResponseEntity<AppResponse<String>> addBlacklistedItem(@Valid @RequestBody BlacklistDTO blacklistDTO) {
+        return ResponseEntity.ok(blacklistService.addBlacklistedItem(blacklistDTO));
     }
 
+    @PreAuthorize("hasRole('ROLE_BLACKLIST_ADMIN')")
     @PostMapping("/remove")
-    public ResponseEntity<BlacklistLog> removeBlacklistedItem(@RequestBody RemoveBlacklistDTO blacklistDTO ) {
-        System.out.println("blacklistDTO.getItemId(): "+ blacklistDTO);
-        BlacklistLog blacklistLog = blacklistService.removeBlacklistedItem(blacklistDTO.getItemId(), blacklistDTO.getReason());
-        return new ResponseEntity<>(blacklistLog, HttpStatus.ACCEPTED);
+    public ResponseEntity<AppResponse<String>> removeBlacklistedItem(@Valid @RequestBody BlacklistDTO blacklistDTO ) {
+        return ResponseEntity.ok(blacklistService.removeBlacklistedItem(blacklistDTO));
     }
 
+    @PreAuthorize("hasRole('ROLE_BLACKLIST_ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<BlacklistDTO> updateBlacklist(@PathVariable int id, @RequestBody BlacklistDTO blacklistDTO) {
-        BlacklistDTO updatedBlacklist = blacklistService.updateBlacklist(id, blacklistDTO);
-        return ResponseEntity.ok(updatedBlacklist);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBlacklist(@PathVariable int id) {
-        blacklistService.deleteBlacklist(id);
-        return ResponseEntity.noContent().build();
-    }
-    @GetMapping("/not-blacklisted")
-    public ResponseEntity<List<ItemDTO>> getItemsNotBlacklisted() {
-        List<ItemDTO> itemsNotBlacklisted = itemService.getItemsNotBlacklisted();
-        return new ResponseEntity<>(itemsNotBlacklisted, HttpStatus.OK);
+    public ResponseEntity<AppResponse<Blacklist>> updateBlacklist(@PathVariable long id, @RequestBody @Valid BlacklistDTO blacklistDTO) {
+        return ResponseEntity.ok(blacklistService.updateBlacklist(id, blacklistDTO));
     }
 }

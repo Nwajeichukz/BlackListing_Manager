@@ -10,26 +10,10 @@ import javax.validation.constraints.NotEmpty;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDto {
-    private Long id;
     @javax.validation.constraints.Pattern(regexp = "(\\w+@)(\\w+\\.com)", message = "wrong email format")
     private String  email;
     @javax.validation.constraints.Pattern(regexp = "(ROLE_BLACKLIST_ADMIN|ROLE_USER_ADMIN)",
             message = "set role to ROLE_BLACKLIST_ADMIN or ROLE_USER_ADMIN")
     private String role;
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
 }

@@ -9,13 +9,11 @@ import Blacklist.Manager.repository.UserRepository;
 import Blacklist.Manager.service.JwtService;
 import Blacklist.Manager.service.MyUserDetailsService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -52,7 +50,6 @@ public class AuthServiceImpl implements AuthService {
         if (checkUser.getPassword() == null) return new AppResponse<>(0, "password not found, set password to enable login");
 
         var user = myUserDetailsService.loadUserByUsername(authenticationRequest.getEmail());
-        log.info(user.getPassword());
 
         if (!passwordEncoder.matches(authenticationRequest.getPassword(), user.getPassword()))
             return  new AppResponse<>(0,"wrong gmail/password");

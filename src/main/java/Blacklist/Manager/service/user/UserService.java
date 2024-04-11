@@ -12,7 +12,7 @@ import org.springframework.data.domain.Pageable;
 public interface UserService {
     AppResponse<String> CreateUser(UserDto userDto);
     AppResponse<Page<UserDto>> getPaginatedAllUsers(Pageable pageable);
-    AppResponse<UserDto> updateUser(Long id, UserDto userDto) throws Exception;
+    AppResponse<UserDto> updateUser(Long id, UserDto userDto);
     AppResponse<String> deleteUser(Long id);
     
 }

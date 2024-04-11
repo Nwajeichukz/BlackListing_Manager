@@ -1,60 +1,34 @@
 package Blacklist.Manager.controller;
 
+import Blacklist.Manager.dto.AppResponse;
 import Blacklist.Manager.dto.ItemDTO;
-import Blacklist.Manager.entity.Item;
 import Blacklist.Manager.service.item.ItemService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import javax.validation.Valid;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/items")
+@RequestMapping("/items")
+@RequiredArgsConstructor
 public class ItemController {
+    private final ItemService itemService;
 
-    @Autowired
-    private ItemService itemService;
-
-    @GetMapping
-    public ResponseEntity<List<Item>> getAllItems() {
-        List<Item> items = itemService.getAllItems();
-        return ResponseEntity.ok(items);
+    @PreAuthorize("hasRole('ROLE_BLACKLIST_ADMIN')")
+    @GetMapping("/all_items")
+    public ResponseEntity<AppResponse<Map<String, Object>>> getAllItems(
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "5") int size) {
+        return ResponseEntity.ok(itemService.getAllItems(PageRequest.of(page, size)));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Item> getItemById(@PathVariable int id) {
-        return itemService.getItemById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @PostMapping()
-    public ResponseEntity<Item> createItem(@RequestBody ItemDTO item) {
-        if (item.getName() == null || item.getCategoryId() == null) {
-            return ResponseEntity.badRequest().build(); // Handle invalid request
-        }
-
-        Item createdItem = itemService.createItem(item);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdItem);
-    }
-
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Item> updateItem(@PathVariable int id, @RequestBody ItemDTO item) {
-
-        Item updatedItem = itemService.updateItem(id, item);
-        return ResponseEntity.ok(updatedItem);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteItem(@PathVariable int id) {
-        if (itemService.getItemById(id).isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        itemService.deleteItem(id);
-        return ResponseEntity.noContent().build();
+    @PreAuthorize("hasRole('ROLE_BLACKLIST_ADMIN')")
+    @PostMapping("/create_item")
+    public ResponseEntity<AppResponse<String>> createItem(@Valid @RequestBody ItemDTO item) {
+        return ResponseEntity.ok(itemService.createItem(item));
     }
 }
-

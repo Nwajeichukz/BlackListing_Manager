@@ -5,10 +5,12 @@ import Blacklist.Manager.entity.Item;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface BlacklistRepository extends JpaRepository<Blacklist, Integer> {
-    // Define custom query methods here if needed
+import java.util.Optional;
 
-    Blacklist findByItem(Item item);
+@Repository
+public interface BlacklistRepository extends JpaRepository<Blacklist, Long> {
+    boolean existsByItem(String item);
+
+    Optional<Blacklist> findByItem(String item);
 }
 

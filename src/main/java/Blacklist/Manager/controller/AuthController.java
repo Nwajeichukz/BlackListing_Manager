@@ -22,11 +22,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class AuthController {
     private final AuthService authService;
 
-//    @Autowired
-//    public AuthController(AuthService authService) {
-//        this.authService = authService;
-//    }
-
     @PostMapping("/update")
     public ResponseEntity<AppResponse<Map<String, Object>>> createUser(@Valid @RequestBody CreatePasswordDto request){
         return ResponseEntity.ok(authService.createPassword(request));
@@ -38,9 +33,5 @@ public class AuthController {
         return ResponseEntity.ok(authService.login(authenticationRequest));
     }
 
-    @ExceptionHandler(ApiException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<AppResponse<String>> handleEmailNotFound(ApiException ex) {
-        return new ResponseEntity<>(new AppResponse<>(1, ex.getMessage()), HttpStatus.NOT_FOUND);
-    }
+
 }

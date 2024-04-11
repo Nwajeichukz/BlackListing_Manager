@@ -5,6 +5,7 @@ import Blacklist.Manager.dto.CreatePasswordDto;
 import Blacklist.Manager.dto.UserDto;
 import Blacklist.Manager.entity.Role;
 import Blacklist.Manager.entity.User;
+import Blacklist.Manager.exception.ApiException;
 import Blacklist.Manager.repository.RoleRepository;
 import Blacklist.Manager.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -53,19 +54,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public AppResponse<Page<UserDto>> getPaginatedAllUsers(Pageable pageable) {
         Page<User> userPage = userRepository.findAll(pageable);
-       // return userPage.map(this::convertToDto);
         return new AppResponse<>(0, "Success", userPage.map(this::convertToDto));
     }
 
     @Override
-    public AppResponse<UserDto> updateUser(Long id, UserDto userDto) throws Exception {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new Exception("User not found for this id :: " + id));
+    public AppResponse<UserDto> updateUser(Long id, UserDto userDto){
+        User user = userRepository.findById(id).orElseThrow(() -> new ApiException("Id Not found"));
 
         user.setEmail(userDto.getEmail());
         
         Role role = roleRepository.findByName(userDto.getRole());
-                // .orElseThrow(() -> new Exception("Role not found: " + userDto.getRole()));
         user.setRoles(role);
 
         final User updatedUser = userRepository.save(user);
@@ -75,16 +73,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public AppResponse<String> deleteUser(Long id) {
-        // Check if the user exists
         if (!userRepository.existsById(id)) {
-            // If not exists, throw an exception
             throw new EntityNotFoundException("User not found with id: " + id);
         }
 
-        // If user exists, proceed to delete
         userRepository.deleteById(id);
 
-        // Return success response after deletion
         return new AppResponse<String>(0, "User deleted successfully");
     }
 
@@ -92,16 +86,10 @@ public class UserServiceImpl implements UserService {
 
     private UserDto convertToDto(User user) {
         UserDto dto = new UserDto();
-        dto.setId(user.getId());
-        dto.setEmail(user.getEmail()); // Set the email from User entity
+        dto.setEmail(user.getEmail());
         if (user.getRoles() != null) {
-            dto.setRole(user.getRoles().getName()); // Set the role name from Role entity
+            dto.setRole(user.getRoles().getName());
         }
         return dto;
     }
-
-   
-
-
-    
 }

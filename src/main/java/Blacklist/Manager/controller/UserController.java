@@ -30,7 +30,6 @@ import org.springframework.data.web.PageableDefault;
 @RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
     private final UserService userService;
 
     @PreAuthorize("hasRole('ROLE_USER_ADMIN')")
@@ -52,30 +51,16 @@ public class UserController {
     @PutMapping("/users/{id}")
     public ResponseEntity<AppResponse<UserDto>> updateUser(@PathVariable(value = "id") Long userId,
                                             @Valid @RequestBody UserDto userDto) {
-        try {
-            AppResponse<UserDto> updatedUser = userService.updateUser(userId, userDto);
-            return ResponseEntity.ok(updatedUser);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new AppResponse<>(1, e.getMessage(), null));
-        }
+
+            return ResponseEntity.ok(userService.updateUser(userId, userDto));
     }
 
     
     @PreAuthorize("hasRole('ROLE_USER_ADMIN')")
-    @DeleteMapping("/users/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<AppResponse<String>> deleteUser(@PathVariable Long id) {
         AppResponse<String> response = userService.deleteUser(id);
         return ResponseEntity.ok(response);
     }
-
-
-
-    // @GetMapping("/users")
-    // public ResponseEntity<List<User>> getAllUsers() {
-    //     List<User> users = userService.getAllUsers();
-    //     return ResponseEntity.ok(users);
-    // }
-
-    
 
 }
