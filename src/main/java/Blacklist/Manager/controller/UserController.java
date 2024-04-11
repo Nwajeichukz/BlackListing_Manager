@@ -38,7 +38,6 @@ public class UserController {
         return ResponseEntity.ok(userService.CreateUser(userDto));
     }
 
-   
 
     @PreAuthorize("hasRole('ROLE_USER_ADMIN')")
     @GetMapping("/all_users")

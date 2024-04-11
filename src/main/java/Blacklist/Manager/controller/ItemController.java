@@ -18,7 +18,6 @@ import java.util.Map;
 public class ItemController {
     private final ItemService itemService;
 
-    @PreAuthorize("hasRole('ROLE_BLACKLIST_ADMIN')")
     @GetMapping("/all_items")
     public ResponseEntity<AppResponse<Map<String, Object>>> getAllItems(
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
