@@ -11,7 +11,6 @@ RUN mvn clean install -DskipTests
 
 
 
-
 FROM public.ecr.aws/docker/library/maven:3.6-jdk-11
 
 WORKDIR /app
